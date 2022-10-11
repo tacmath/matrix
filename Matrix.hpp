@@ -6,7 +6,7 @@ template <typename T = float>
 struct Matrix : public std::vector<std::vector<T>>
 {
         Matrix(void) {}
-        Matrix(size_t width, size_t height) {
+        Matrix(size_t height, size_t width) {
             this->resize(height);
 		    for (unsigned y = 0; y < height; ++y) {
                 (*this)[y].resize(width);
@@ -81,6 +81,8 @@ struct Matrix : public std::vector<std::vector<T>>
         }
 
         unsigned width(void) const {
+            if (!this->size())
+                return (0);
             return ((*this)[0].size());
         }
 
@@ -94,11 +96,11 @@ struct Matrix : public std::vector<std::vector<T>>
 
             for (int y = 0; y < height; y++) {
                 std::cout << "[";
-                for (int x = 0; x < width - 1; x++) {
-                    std::cout << (*this)[y][x] <<  ", ";
-                }
-                if (width)
+                if (width) {
+                    for (int x = 0; x < width - 1; x++)
+                        std::cout << (*this)[y][x] <<  ", ";
                     std::cout << (*this)[y][width - 1];
+                }
                 std::cout << "]" << std::endl;
             }
             std::cout << std::endl;

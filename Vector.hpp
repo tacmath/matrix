@@ -61,38 +61,15 @@ struct Vector : public std::vector<T>
         }
 
         void print(void) {
-            int size = this->size();
+            unsigned size = this->size();
 
             std::cout << "v = [";
-				for (int n = 0; n < size - 1; n++) {
-					std::cout << (*this)[n] <<  ", ";
-				}
-                if (size)
-                    std::cout << (*this)[size - 1];
-				std::cout << "]" << std::endl;
+            for (int n = 0; n < size - 1; n++) {
+                std::cout << (*this)[n] <<  ", ";
+            }
+            if (size)
+                std::cout << (*this)[size - 1];
+            std::cout << "]" << std::endl;
         }
 };
 
-int main (void) {
-    Vector<> v1({2.3, 3.});
-    Vector<float> v3(10);
-    Vector<> v4(v1);
-     Vector<float> res;
-    
- //   Vector<float> test;
-
-    v1.print();
-    v3.print();
-    v4 = {2.3, 3., 2.};
-    v4.print();
-    v4 = v1;
-    v4.print();
-    v4 = v1 + v4 + v1 + v1;
-    v4.print();
-    v4 = v4 * 3;
-    v4.print();
-    v1.print();
-    std::cout << v1.data() << std::endl;
-
-    return (0);
-}

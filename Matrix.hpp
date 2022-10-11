@@ -7,6 +7,8 @@ struct Matrix : public std::vector<std::vector<T>>
 {
         Matrix(void) {}
         Matrix(size_t height, size_t width) {
+            if (!height || !width)
+                return;
             this->resize(height);
 		    for (unsigned y = 0; y < height; ++y) {
                 (*this)[y].resize(width);

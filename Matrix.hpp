@@ -73,12 +73,21 @@ struct Matrix : public std::vector<std::vector<T>>
             return (result);
         }
 
-        Matrix operator*(const T & rhs) {
+        Matrix operator*(const T rhs) {
             Matrix result(*this);
 
             for (unsigned y = 0; y < result.height(); ++y)
                 for (unsigned x = 0; x < result.width(); ++x)
 			        result[y][x] *= rhs;
+            return (result);
+        }
+
+        Matrix operator/(const T rhs) {
+            Matrix result(*this);
+
+            for (unsigned y = 0; y < result.height(); ++y)
+                for (unsigned x = 0; x < result.width(); ++x)
+			        result[y][x] /= rhs;
             return (result);
         }
 
@@ -107,5 +116,10 @@ struct Matrix : public std::vector<std::vector<T>>
             }
             std::cout << std::endl;
         }
+
+        Matrix &operator+=(const Matrix<T> & rhs) {*this = *this + rhs;};
+        Matrix &operator-=(const Matrix<T> & rhs) {*this = *this - rhs;};
+        Matrix &operator*=(const T rhs) {*this = *this * rhs;};
+        Matrix &operator/=(const T rhs) {*this = *this / rhs;};
 };
 

@@ -52,11 +52,19 @@ struct Vector : public std::vector<T>
             return (result);
         }
 
-        Vector operator*(const T & rhs) {
+        Vector operator*(const T rhs) const {
             Vector result(*this);
 
 		    for (unsigned n = 0; n < this->size(); ++n)
 			    result[n] *= rhs;
+            return (result);
+        }
+
+        Vector operator/(const T rhs) const {
+            Vector result(*this);
+
+		    for (unsigned n = 0; n < this->size(); ++n)
+			    result[n] /= rhs;
             return (result);
         }
 
@@ -71,5 +79,22 @@ struct Vector : public std::vector<T>
                 std::cout << (*this)[size - 1];
             std::cout << "]" << std::endl;
         }
+
+        Vector &operator+=(const Vector<T> & rhs) {*this = *this + rhs;};
+        Vector &operator-=(const Vector<T> & rhs) {*this = *this - rhs;};
+        Vector &operator*=(const T rhs) {*this = *this * rhs;};
+        Vector &operator/=(const T rhs) {*this = *this / rhs;};
 };
+
+template <typename T>
+Vector<T> linear_combination(const Vector<Vector<T>> &vectors, const Vector<T> &coef) {
+    Vector<T> result(vectors.size());
+
+    if (vectors.size() != coef.size())
+        throw std::logic_error("Vectors are of different size");
+    for (unsigned n = 0; n < vectors.size(); n++)
+        result += vectors[n] * coef[n];
+    return (result);
+}
+
 

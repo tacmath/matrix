@@ -68,6 +68,17 @@ struct Vector : public std::vector<T>
             return (result);
         }
 
+        T dot(const Vector<T> & vector) {
+            T result;
+            
+            if (this->size() != vector.size())
+                throw std::logic_error("Vectors are of different size");
+            result = 0;
+            for (int n = 0; n < this->size(); n++)
+                result += (*this)[n] * vector[n];
+            return (result);
+        }
+
         void print(void) {
             unsigned size = this->size();
 
@@ -80,20 +91,32 @@ struct Vector : public std::vector<T>
             std::cout << "]" << std::endl;
         }
 
-        Vector &operator+=(const Vector<T> & rhs) {*this = *this + rhs;};
-        Vector &operator-=(const Vector<T> & rhs) {*this = *this - rhs;};
-        Vector &operator*=(const T rhs) {*this = *this * rhs;};
-        Vector &operator/=(const T rhs) {*this = *this / rhs;};
+        void operator+=(const Vector<T> & rhs) {*this = *this + rhs;};
+        void operator-=(const Vector<T> & rhs) {*this = *this - rhs;};
+        void operator*=(const T rhs) {*this = *this * rhs;};
+        void operator/=(const T rhs) {*this = *this / rhs;};
 };
 
 template <typename T>
-Vector<T> linear_combination(const Vector<Vector<T>> &vectors, const Vector<T> &coef) {
-    Vector<T> result(vectors.size());
+Vector<T> linear_combination(const Vector<Vector<T>> &vectors, const Vector<T> &coefs) {
 
-    if (vectors.size() != coef.size())
+    Vector<T> result((vectors.size()) ? vectors[0].size() : 0);
+  //  Vector<T> result(vectors[0].size());   the ternaire might not be needed
+
+    if (vectors.size() != coefs.size())
         throw std::logic_error("Vectors are of different size");
     for (unsigned n = 0; n < vectors.size(); n++)
-        result += vectors[n] * coef[n];
+        result += vectors[n] * coefs[n];
+    return (result);
+}
+
+template <typename T>
+Vector<T> lerp(const Vector<T> &u, const Vector<T> &v, const float t) {
+    Vector<T> result;
+
+    if (u.size() != v.size())
+        throw std::logic_error("Vectors are of different size");
+    result = u * (1 - t) + v * t;
     return (result);
 }
 

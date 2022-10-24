@@ -1,5 +1,5 @@
-#include "Vector.hpp"
-#include "Matrix.hpp"
+#include "../Vector.hpp"
+#include "../Matrix.hpp"
 
 int main (void) {
     Vector<> v1({2.3, 3.});
@@ -16,6 +16,7 @@ int main (void) {
     v1 *= 2;
     v1.print();
     m1.print();
+    m2[1][2] = 3;
     m1 += m1 + m2 - m1;
     m1.print();
     m1 /= 2;

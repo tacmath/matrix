@@ -73,7 +73,7 @@ struct Matrix : public std::vector<std::vector<T>>
             return (result);
         }
 
-        Matrix operator*(const T rhs) {
+        Matrix operator*(const T rhs) const {
             Matrix result(*this);
 
             for (unsigned y = 0; y < result.height(); ++y)
@@ -82,7 +82,7 @@ struct Matrix : public std::vector<std::vector<T>>
             return (result);
         }
 
-        Matrix operator/(const T rhs) {
+        Matrix operator/(const T rhs) const {
             Matrix result(*this);
 
             for (unsigned y = 0; y < result.height(); ++y)
@@ -117,9 +117,18 @@ struct Matrix : public std::vector<std::vector<T>>
             std::cout << std::endl;
         }
 
-        Matrix &operator+=(const Matrix<T> & rhs) {*this = *this + rhs;};
-        Matrix &operator-=(const Matrix<T> & rhs) {*this = *this - rhs;};
-        Matrix &operator*=(const T rhs) {*this = *this * rhs;};
-        Matrix &operator/=(const T rhs) {*this = *this / rhs;};
+        void operator+=(const Matrix<T> & rhs) {*this = *this + rhs;};
+        void operator-=(const Matrix<T> & rhs) {*this = *this - rhs;};
+        void operator*=(const T rhs) {*this = *this * rhs;};
+        void operator/=(const T rhs) {*this = *this / rhs;};
 };
 
+template <typename T>
+Matrix<T> lerp(const Matrix<T> &u, const Matrix<T> &v, const float t) {
+    Matrix<T> result;
+
+    if (u.size() != v.size())
+        throw std::logic_error("Matrices are of different size");
+    result = u * (1 - t) + v * t;
+    return (result);
+}

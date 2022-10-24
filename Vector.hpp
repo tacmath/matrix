@@ -155,8 +155,6 @@ template <typename T>
 float angle_cos(const Vector<T> &u, const Vector<T> &v) {
     float result;
 
-    if (u.size() != v.size())
-        throw std::logic_error("Vectors are of different size");
     result = u.dot(v) / (u.norm() * v.norm());
     return (result);
 }

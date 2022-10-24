@@ -159,4 +159,15 @@ float angle_cos(const Vector<T> &u, const Vector<T> &v) {
     return (result);
 }
 
+template <typename T>
+ Vector<T> cross_product(const Vector<T> &u, const Vector<T> &v) {
+    Vector<T> result(3);
+
+    if (u.size() != 3 ||  v.size() != 3)
+        throw std::logic_error("Vectors are not of size 3");
+    result[0] = u[1] * v[2] - u[2] * v[1];
+    result[1] = -u[0] * v[2] + u[2] * v[0];
+    result[2] = u[0] * v[1] - u[1] * v[0];
+    return (result);
+ }
 

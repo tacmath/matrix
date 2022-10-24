@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+//#include "Vector.hpp"
 
 
 template <typename T = float>
@@ -90,6 +91,15 @@ struct Matrix : public std::vector<std::vector<T>>
 			        result[y][x] /= rhs;
             return (result);
         }
+
+        /*Vector operator*(const VectorT<T> & rhs) const {
+            Vector result(rhs.size());
+
+            for (unsigned y = 0; y < result.height(); ++y)
+                for (unsigned x = 0; x < result.width(); ++x)
+			        result[y][x] *= rhs;
+            return (result);
+        }*/
 
         unsigned width(void) const {
             if (!this->size())

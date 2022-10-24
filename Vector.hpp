@@ -1,5 +1,8 @@
 #include <iostream>
 #include <vector>
+#include <math.h>
+
+#define VECTOR_ABS(x) (x > 0) ? x : -x
 
 
 template <typename T = float>
@@ -68,7 +71,7 @@ struct Vector : public std::vector<T>
             return (result);
         }
 
-        T dot(const Vector<T> & vector) {
+        T dot(const Vector<T> & vector) const {
             T result;
             
             if (this->size() != vector.size())
@@ -76,6 +79,34 @@ struct Vector : public std::vector<T>
             result = 0;
             for (int n = 0; n < this->size(); n++)
                 result += (*this)[n] * vector[n];
+            return (result);
+        }
+
+        float norm_1() const {
+            float result;
+
+            result = 0.0f;
+            for (int n = 0; n < this->size(); n++)
+                result += VECTOR_ABS((*this)[n]);
+            return (result);
+        }
+
+        float norm() const {
+            float result;
+
+            result = 0.0f;
+            for (int n = 0; n < this->size(); n++)
+                result += (*this)[n] * (*this)[n];
+            return (pow(result, 0.5f));
+        }
+
+        float norm_inf() const {
+            float result;
+
+            result = 0;
+            for (int n = 0; n < this->size(); n++)
+                if (VECTOR_ABS((*this)[n]) > result)
+                    result = VECTOR_ABS((*this)[n]);
             return (result);
         }
 
@@ -117,6 +148,16 @@ Vector<T> lerp(const Vector<T> &u, const Vector<T> &v, const float t) {
     if (u.size() != v.size())
         throw std::logic_error("Vectors are of different size");
     result = u * (1 - t) + v * t;
+    return (result);
+}
+
+template <typename T>
+float angle_cos(const Vector<T> &u, const Vector<T> &v) {
+    float result;
+
+    if (u.size() != v.size())
+        throw std::logic_error("Vectors are of different size");
+    result = u.dot(v) / (u.norm() * v.norm());
     return (result);
 }
 

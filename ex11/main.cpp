@@ -22,10 +22,14 @@ int main (void) {
     std::cout << "determinant : " << m.determinant() << std::endl << "------------------" << std::endl;
 
     m = Matrix<>(0, 0);
-    std::cout << "determinant : " << m.determinant() << std::endl << "------------------" << std::endl;;
+    std::cout << "determinant : " << m.determinant() << std::endl << "------------------" << std::endl;
 
     m = Matrix<>(1, 1);
     m[0][0] = 10;
+    std::cout << "determinant : " << m.determinant() << std::endl << "------------------" << std::endl;
+
+    m = Matrix<>({{0., 5., -2., 4.}, {4., 2.5, 20., 4.}, {8., 0, 1., 4.}, {0, -4., 17., 1.}});
     std::cout << "determinant : " << m.determinant() << std::endl;
+
     return (0);
 }

@@ -1,3 +1,5 @@
+#ifndef VECTOR_HPP
+#define VECTOR_HPP
 #include <iostream>
 #include <vector>
 #include <math.h>
@@ -170,4 +172,4 @@ template <typename T>
     result[2] = u[0] * v[1] - u[1] * v[0];
     return (result);
  }
-
+#endif

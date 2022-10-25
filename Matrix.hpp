@@ -1,6 +1,8 @@
+#ifndef MATRIX_HPP
+#define MATRIX_HPP
 #include <iostream>
 #include <vector>
-//#include "Vector.hpp"
+#include "Vector.hpp"
 
 
 template <typename T = float>
@@ -92,14 +94,39 @@ struct Matrix : public std::vector<std::vector<T>>
             return (result);
         }
 
-        /*Vector operator*(const VectorT<T> & rhs) const {
-            Vector result(rhs.size());
+        Vector<T> operator*(const Vector<T> & rhs) const {
+            Vector<T> result(this->size());
 
-            for (unsigned y = 0; y < result.height(); ++y)
-                for (unsigned x = 0; x < result.width(); ++x)
-			        result[y][x] *= rhs;
+            if (this->width() != rhs.size())
+                throw std::logic_error("Matrice width and Vector size are not the same");
+            for (unsigned y = 0; y < this->height(); ++y)
+                for (unsigned x = 0; x < this->width(); ++x)
+			        result[y] += (*this)[y][x] * rhs[x];
             return (result);
-        }*/
+        }
+
+        Matrix operator*(const Matrix<T> & rhs) const {
+            Matrix result(this->height(), rhs.width());
+            
+            if (this->width() != rhs.height() || this->height() != rhs.width())
+                throw std::logic_error("Matrices shapes are not usable for multiplication");
+            for (unsigned v = 0; v < rhs.width(); ++v)
+                for (unsigned y = 0; y < this->height(); ++y)
+                    for (unsigned x = 0; x < rhs.height(); ++x)
+			            result[y][v] += (*this)[y][x] * rhs[x][v];
+            return (result);
+        }
+
+        T trace(void) {
+            T result;
+            size_t size;
+
+            size = (this->width() > this->height()) ? this->height() : this->width();
+            result = 0;
+            for (unsigned n = 0; n < size; ++n)
+                result += (*this)[n][n];
+            return (result); 
+        }
 
         unsigned width(void) const {
             if (!this->size())
@@ -130,6 +157,7 @@ struct Matrix : public std::vector<std::vector<T>>
         void operator+=(const Matrix<T> & rhs) {*this = *this + rhs;};
         void operator-=(const Matrix<T> & rhs) {*this = *this - rhs;};
         void operator*=(const T rhs) {*this = *this * rhs;};
+        void operator*=(const Matrix<T> & rhs) {*this = *this * rhs;};
         void operator/=(const T rhs) {*this = *this / rhs;};
 };
 
@@ -142,3 +170,4 @@ Matrix<T> lerp(const Matrix<T> &u, const Matrix<T> &v, const float t) {
     result = u * (1 - t) + v * t;
     return (result);
 }
+#endif

@@ -216,6 +216,22 @@ struct Matrix : public std::vector<Vector<T>>
             return (result);
         }
 
+        unsigned rank(void) {
+            unsigned result;
+            Matrix row_echelon;
+
+            result = 0;
+            row_echelon = this->row_echelon();
+            for (unsigned y = 0; y < this->height(); y++)
+                for (unsigned x = 0; x < this->width(); x++) {
+                    if (row_echelon[y][x]) {
+                        result++;
+                        break;
+                    }
+                }
+            return (result);
+        }
+
         unsigned width(void) const {
             if (!this->size())
                 return (0);

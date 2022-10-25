@@ -173,28 +173,34 @@ struct Matrix : public std::vector<Vector<T>>
         T determinant(void) {           //change it
             T result;
             size_t size;
+            Matrix matrix(*this);
+            unsigned pivot;
 
-            if (this->width() != this->height() || this->height() > 4)
-                throw std::logic_error("Matrice shape is not a square or its dimention is higher than 4");
+            if (this->width() != this->height())
+                throw std::logic_error("Matrice shape is not a square");
             size = this->height();
             if (!size)
                 return (0);
-            if (size == 1)
-                return ((*this)[0][0]);
-            if (size == 2)
-                return ((*this)[0][0] * (*this)[1][1] - (*this)[1][0] * (*this)[0][1]);
-            if (size == 3)
-                return (mat3Determinant(*this));
-            result = 0;
-            Matrix test({{(*this)[1][1], (*this)[1][2], (*this)[1][3]}, {(*this)[2][1], (*this)[2][2], (*this)[2][3]}, {(*this)[3][1], (*this)[3][2], (*this)[3][3]}});
-            result += (*this)[0][0] * mat3Determinant(test);
-            test = Matrix({{(*this)[1][0], (*this)[1][2], (*this)[1][3]}, {(*this)[2][0], (*this)[2][2], (*this)[2][3]}, {(*this)[3][0], (*this)[3][2], (*this)[3][3]}});
-            result += -(*this)[0][1] * mat3Determinant(test);
-            test = Matrix({{(*this)[1][0], (*this)[1][1], (*this)[1][3]}, {(*this)[2][0], (*this)[2][1], (*this)[2][3]}, {(*this)[3][0], (*this)[3][1], (*this)[3][3]}});
-            result += (*this)[0][2] * mat3Determinant(test);
-            test = Matrix({{(*this)[1][0], (*this)[1][1], (*this)[1][2]}, {(*this)[2][0], (*this)[2][1], (*this)[2][2]}, {(*this)[3][0], (*this)[3][1], (*this)[3][2]}});
-            result += -(*this)[0][3] * mat3Determinant(test);
-            return (result);
+            pivot = 0;
+            result = 1;
+            for (unsigned n = 0; n < size - 1; n++) {
+                if (matrix[pivot][n] == 0)
+                    for (unsigned m = pivot; m < size; m++)
+                        if (matrix[m][n]) {
+                            matrix.swap_row(pivot, m);             //swap row for a pivot
+                            result *= -1;
+                            break ;
+                        }    
+                if (!matrix[pivot][n])
+                    return (0);
+                result *= matrix[pivot][n];
+                matrix[pivot] *= 1.0f / matrix[pivot][n];       // scale by the inverse to make pivot = 1
+                for (unsigned m = pivot + 1; m < size; m++)
+                    if (matrix[m][n])
+                        matrix[m] -=  matrix[pivot] * (matrix[m][n] / matrix[pivot][n]);    // make everything around de pivot = 0
+                pivot++;
+            }
+            return (result * matrix[size - 1][size - 1]);
         }
 
         Matrix inverse(void) {                  // besoin de creer une matrice de cofactor
@@ -272,16 +278,6 @@ Matrix<T> lerp(const Matrix<T> &u, const Matrix<T> &v, const float t) {
     if (u.size() != v.size())
         throw std::logic_error("Matrices are of different size");
     result = u * (1 - t) + v * t;
-    return (result);
-}
-
-template <typename T>
-T mat3Determinant(const Matrix<T> &matrix) {
-    T result;
-
-    result = matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[2][1] * matrix[1][2]);
-    result -= matrix[0][1] * (matrix[1][0] * matrix[2][2] -  matrix[2][0] * matrix[1][2]);
-    result += matrix[0][2] * (matrix[1][0] * matrix[2][1] -  matrix[2][0] * matrix[1][1]);
     return (result);
 }
 

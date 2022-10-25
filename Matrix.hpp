@@ -6,7 +6,7 @@
 
 
 template <typename T = float>
-struct Matrix : public std::vector<std::vector<T>>
+struct Matrix : public std::vector<Vector<T>>
 {
         Matrix(void) {}
         Matrix(size_t height, size_t width) {
@@ -128,6 +128,91 @@ struct Matrix : public std::vector<std::vector<T>>
             return (result); 
         }
 
+        Matrix transpose(void) {
+            Matrix result(this->width(), this->height());
+
+            for (unsigned y = 0; y < this->height(); ++y)
+                for (unsigned x = 0; x < this->width(); ++x)
+			        result[x][y] += (*this)[y][x];
+            return (result); 
+        }
+        
+        void swap_row(unsigned n, unsigned m) {
+            std::vector<T> tmp;
+
+            tmp = (*this)[n];
+            (*this)[n] = (*this)[m];
+            (*this)[m] = tmp;
+        }
+        
+        Matrix row_echelon(void) {
+            Matrix result(*this);
+            unsigned row;
+            
+            for (unsigned n = 0; n < this->height(); n++) {
+                row = n;
+                if (result[row][n] != 1)
+                    for (unsigned m = 0; m < this->height(); m++)
+                        if (result[m][n]) {
+                            swap_row(0, m);
+                            break ;
+                        }
+                result[row] *= 1.0f / result[row][n];
+
+                for (unsigned m = row + 1; m < this->height(); m++) {
+                    if (result[m][n])
+                        result[m] -=  result[row] * result[m][n];
+                }
+            }
+            return (result);
+        }
+
+        T determinant(void) {           //change it
+            T result;
+            size_t size;
+
+            if (this->width() != this->height() || this->height() > 4)
+                throw std::logic_error("Matrice shape is not a square or its dimention is higher than 4");
+            size = this->height();
+            if (!size)
+                return (0);
+            if (size == 1)
+                return ((*this)[0][0]);
+            if (size == 2)
+                return ((*this)[0][0] * (*this)[1][1] - (*this)[1][0] * (*this)[0][1]);
+            if (size == 3)
+                return (mat3Determinant(*this));
+            result = 0;
+            Matrix test({{(*this)[1][1], (*this)[1][2], (*this)[1][3]}, {(*this)[2][1], (*this)[2][2], (*this)[2][3]}, {(*this)[3][1], (*this)[3][2], (*this)[3][3]}});
+            result += (*this)[0][0] * mat3Determinant(test);
+            test = Matrix({{(*this)[1][0], (*this)[1][2], (*this)[1][3]}, {(*this)[2][0], (*this)[2][2], (*this)[2][3]}, {(*this)[3][0], (*this)[3][2], (*this)[3][3]}});
+            result += -(*this)[0][1] * mat3Determinant(test);
+            test = Matrix({{(*this)[1][0], (*this)[1][1], (*this)[1][3]}, {(*this)[2][0], (*this)[2][1], (*this)[2][3]}, {(*this)[3][0], (*this)[3][1], (*this)[3][3]}});
+            result += (*this)[0][2] * mat3Determinant(test);
+            test = Matrix({{(*this)[1][0], (*this)[1][1], (*this)[1][2]}, {(*this)[2][0], (*this)[2][1], (*this)[2][2]}, {(*this)[3][0], (*this)[3][1], (*this)[3][2]}});
+            result += -(*this)[0][3] * mat3Determinant(test);
+            return (result);
+        }
+
+        Matrix inverse(void) {                  // besoin de creer une matrice de cofactor
+            size_t size = this->height();
+            Matrix result(size, size);
+            T determinant;
+            float determinantInverse;
+
+            if (!(determinant = this->determinant()))
+                throw std::logic_error("Matrice determinant is 0");
+            determinantInverse = 1.0f / determinant;
+            for (unsigned y = 0; y < size; y++)
+                for (unsigned x = 0; x < size; x++) {
+                    if (x != y)
+                        result[y][x] = -(*this)[y][x] * determinantInverse;
+                    else
+                        result[size - y - 1][size - x - 1] = (*this)[y][x] * determinantInverse;
+                }
+            return (result);
+        }
+
         unsigned width(void) const {
             if (!this->size())
                 return (0);
@@ -170,4 +255,15 @@ Matrix<T> lerp(const Matrix<T> &u, const Matrix<T> &v, const float t) {
     result = u * (1 - t) + v * t;
     return (result);
 }
+
+template <typename T>
+T mat3Determinant(const Matrix<T> &matrix) {
+    T result;
+
+    result = matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[2][1] * matrix[1][2]);
+    result -= matrix[0][1] * (matrix[1][0] * matrix[2][2] -  matrix[2][0] * matrix[1][2]);
+    result += matrix[0][2] * (matrix[1][0] * matrix[2][1] -  matrix[2][0] * matrix[1][1]);
+    return (result);
+}
+
 #endif

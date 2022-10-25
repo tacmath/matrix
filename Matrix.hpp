@@ -147,22 +147,25 @@ struct Matrix : public std::vector<Vector<T>>
         
         Matrix row_echelon(void) {
             Matrix result(*this);
-            unsigned row;
+            unsigned pivot;
             
-            for (unsigned n = 0; n < this->height(); n++) {
-                row = n;
-                if (result[row][n] != 1)
-                    for (unsigned m = 0; m < this->height(); m++)
+            pivot = 0;
+            for (unsigned n = 0; n < this->width(); n++) {
+                if (result[pivot][n] == 0)
+                    for (unsigned m = pivot; m < this->height(); m++)
                         if (result[m][n]) {
-                            swap_row(0, m);
+                            result.swap_row(pivot, m);             //swap row for a pivot
                             break ;
-                        }
-                result[row] *= 1.0f / result[row][n];
-
-                for (unsigned m = row + 1; m < this->height(); m++) {
-                    if (result[m][n])
-                        result[m] -=  result[row] * result[m][n];
-                }
+                        }    
+                if (!result[pivot][n])
+                    continue;
+                result[pivot] *= 1.0f / result[pivot][n];       // scale by the inverse to make pivot = 1
+                for (unsigned m = 0; m < this->height(); m++)
+                    if (result[m][n] && m != pivot)
+                        result[m] -=  result[pivot] * (result[m][n] / result[pivot][n]);    // make everything around de pivot = 0
+                pivot++;
+                if (pivot == this->height())
+                    break;
             }
             return (result);
         }

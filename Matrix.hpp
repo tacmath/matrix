@@ -159,10 +159,12 @@ struct Matrix : public std::vector<Vector<T>>
                         }    
                 if (!result[pivot][n])
                     continue;
-                result[pivot] *= 1.0f / result[pivot][n];       // scale by the inverse to make pivot = 1
+                result[pivot] *= 1.0f / result[pivot][n];       // scale by the inverse to make pivot = 1       |       maybe change to prevent -0
                 for (unsigned m = 0; m < this->height(); m++)
-                    if (result[m][n] && m != pivot)
-                        result[m] -=  result[pivot] * (result[m][n] / result[pivot][n]);    // make everything around de pivot = 0
+                    if (result[m][n] && m != pivot) {
+                        result[m] -=  result[pivot] * result[m][n];    // make everything around the pivot = 0
+                        result[m][n] = 0;                              // for the evil floating point 
+                    }
                 pivot++;
                 if (pivot == this->height())
                     break;
@@ -170,7 +172,7 @@ struct Matrix : public std::vector<Vector<T>>
             return (result);
         }
 
-        T determinant(void) {           //change it
+        T determinant(void) {
             T result;
             size_t size;
             Matrix matrix(*this);
@@ -196,8 +198,10 @@ struct Matrix : public std::vector<Vector<T>>
                 result *= matrix[pivot][n];
                 matrix[pivot] *= 1.0f / matrix[pivot][n];       // scale by the inverse to make pivot = 1
                 for (unsigned m = pivot + 1; m < size; m++)
-                    if (matrix[m][n])
-                        matrix[m] -=  matrix[pivot] * (matrix[m][n] / matrix[pivot][n]);    // make everything around de pivot = 0
+                    if (matrix[m][n]) {
+                        matrix[m] -=  matrix[pivot] * matrix[m][n];    // make everything under the pivot = 0
+                        matrix[m][n] = 0;
+                    }
                 pivot++;
             }
             return (result * matrix[size - 1][size - 1]);
@@ -217,7 +221,7 @@ struct Matrix : public std::vector<Vector<T>>
             return(result);
         }
 
-        Matrix inverse(void) {                  // besoin de creer une matrice de cofactor
+        Matrix inverse(void) {
             size_t size = this->height();
             Matrix result(size, size);
             Matrix reduced;
@@ -261,19 +265,7 @@ struct Matrix : public std::vector<Vector<T>>
         }
 
         void print(void) {
-            unsigned height = this->height();
-            unsigned width = this->width();
-
-            for (int y = 0; y < height; y++) {
-                std::cout << "[";
-                if (width) {
-                    for (int x = 0; x < width - 1; x++)
-                        std::cout << (*this)[y][x] <<  ", ";
-                    std::cout << (*this)[y][width - 1];
-                }
-                std::cout << "]" << std::endl;
-            }
-            std::cout << std::endl;
+            std::cout << *this << std::endl;
         }
 
         void operator+=(const Matrix<T> & rhs) {*this = *this + rhs;};
@@ -284,6 +276,23 @@ struct Matrix : public std::vector<Vector<T>>
 };
 
 template <typename T>
+std::ostream& operator<<(std::ostream& os, const Matrix<T> &matrix) {
+    unsigned height = matrix.height();
+    unsigned width = matrix.width();
+
+    for (int y = 0; y < height; y++) {
+        os << "[";
+        if (width) {
+            for (int x = 0; x < width - 1; x++)
+                os << matrix[y][x] <<  ", ";
+            os << matrix[y][width - 1];
+        }
+        os << "]" << std::endl;
+    }
+    return (os);
+}
+
+template <typename T>
 Matrix<T> lerp(const Matrix<T> &u, const Matrix<T> &v, const float t) {
     Matrix<T> result;
 
@@ -291,6 +300,15 @@ Matrix<T> lerp(const Matrix<T> &u, const Matrix<T> &v, const float t) {
         throw std::logic_error("Matrices are of different size");
     result = u * (1 - t) + v * t;
     return (result);
+}
+
+Matrix<float> perspective(float fov, float ratio, float near, float far) {
+    float   scale = 1.0f / tanf((fov / 2.0f) * (3.14159265358979323846 / 180.0f));
+    Matrix<float>  projection({{scale / ratio,    0,      0,      0}
+                        ,{0,                scale,  0,      0}
+                        ,{0,                0,      -((far + near) / (far - near)),   -((2 * far * near) / (far - near))}
+                        ,{0,                0,     -1,      0}});
+    return (projection);
 }
 
 #endif

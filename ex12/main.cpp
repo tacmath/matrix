@@ -39,8 +39,6 @@ int main (void) {
     std::cout << "augmented :" << std::endl;
     res.print();
 
-    std::cout << "reduced row echelon :" << std::endl;
-    res = res.row_echelon();
-    res.print();
+    std::cout << "reduced row echelon :" << std::endl << res.row_echelon() << std::endl;
     return (0);
 }

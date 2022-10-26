@@ -112,23 +112,27 @@ struct Vector : public std::vector<T>
             return (result);
         }
 
-        void print(void) {
-            unsigned size = this->size();
-
-            std::cout << "v = [";
-            for (int n = 0; n < size - 1; n++) {
-                std::cout << (*this)[n] <<  ", ";
-            }
-            if (size)
-                std::cout << (*this)[size - 1];
-            std::cout << "]" << std::endl;
-        }
+        void print(void) {std::cout << *this << std::endl;}
 
         void operator+=(const Vector<T> & rhs) {*this = *this + rhs;};
         void operator-=(const Vector<T> & rhs) {*this = *this - rhs;};
         void operator*=(const T rhs) {*this = *this * rhs;};
         void operator/=(const T rhs) {*this = *this / rhs;};
 };
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const Vector<T> &vector) {
+    unsigned size = vector.size();
+
+    os << "v = [";
+    for (int n = 0; n < size - 1; n++) {
+        os << vector[n] <<  ", ";
+    }
+    if (size)
+        os << vector[size - 1];
+    os << "]";
+    return (os);
+}
 
 template <typename T>
 Vector<T> linear_combination(const Vector<Vector<T>> &vectors, const Vector<T> &coefs) {

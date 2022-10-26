@@ -203,22 +203,34 @@ struct Matrix : public std::vector<Vector<T>>
             return (result * matrix[size - 1][size - 1]);
         }
 
+        Matrix augmented(void) {
+            size_t size = this->height();
+            Matrix result(size, size * 2);
+
+            for (unsigned y = 0; y < size; y++) {
+                for (unsigned x = 0; x < size; x++) {
+                    if (x == y)
+                        result[y][x + size] = 1;
+                    result[y][x] = (*this)[y][x];
+                }
+            }
+            return(result);
+        }
+
         Matrix inverse(void) {                  // besoin de creer une matrice de cofactor
             size_t size = this->height();
             Matrix result(size, size);
-            T determinant;
-            float determinantInverse;
+            Matrix reduced;
 
-            if (!(determinant = this->determinant()))
-                throw std::logic_error("Matrice determinant is 0");
-            determinantInverse = 1.0f / determinant;
-            for (unsigned y = 0; y < size; y++)
-                for (unsigned x = 0; x < size; x++) {
-                    if (x != y)
-                        result[y][x] = -(*this)[y][x] * determinantInverse;
-                    else
-                        result[size - y - 1][size - x - 1] = (*this)[y][x] * determinantInverse;
-                }
+            if (this->width() != this->height())
+                throw std::logic_error("Matrice shape is not a square");
+            reduced = this->augmented().row_echelon();
+            for (unsigned y = 0; y < size; y++) {
+                if (!reduced[y][y])
+                    throw std::logic_error("Matrice determinant is 0");
+                for (unsigned x = 0; x < size; x++)
+                        result[y][x] = reduced[y][x + size];
+            }
             return (result);
         }
 

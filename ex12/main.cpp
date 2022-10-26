@@ -29,5 +29,18 @@ int main (void) {
     res = m.inverse();
     std::cout << "inverse :" << std::endl;
     res.print();
+    std::cout << "------------------" << std::endl;
+
+
+
+    m = Matrix<>({{8., 5., -2.}, {4., 7., 20.}, {7., 6., 1.}});
+    m.print();
+    res = m.augmented();
+    std::cout << "augmented :" << std::endl;
+    res.print();
+
+    std::cout << "reduced row echelon :" << std::endl;
+    res = res.row_echelon();
+    res.print();
     return (0);
 }

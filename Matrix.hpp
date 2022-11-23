@@ -304,10 +304,10 @@ Matrix<T> lerp(const Matrix<T> &u, const Matrix<T> &v, const float t) {
 
 Matrix<float> perspective(float fov, float ratio, float near, float far) {
     float   scale = 1.0f / tanf((fov / 2.0f) * (3.14159265358979323846 / 180.0f));
-    Matrix<float>  projection({ {scale / ratio,    0,      0,      0}
+    Matrix<float>  projection({ {scale / ratio,     0,      0,      0}
                                 ,{0,                scale,  0,      0}
-                                ,{0,                0,      -((far + near) / (far - near)),   -((2 * far * near) / (far - near))}
-                                ,{0,                0,     -1,      0}});
+                                ,{0,                0,      -((far + near) / (far - near)),     -1}
+                                ,{0,                0,      -((2 * far * near) / (far - near)), 0}});
     return (projection);
 }
 

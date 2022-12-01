@@ -4,7 +4,7 @@
 #include <vector>
 #include <math.h>
 
-#define VECTOR_ABS(x) (x > 0) ? x : -x
+#define VECTOR_ABS(x) ((x > 0) ? x : -x)
 
 
 template <typename T = float>
